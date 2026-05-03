@@ -29,7 +29,6 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Шапка сайта */
         .header {
             background-color: var(--bg-card);
             padding: 15px 20px;
@@ -54,13 +53,12 @@
             font-size: 18px;
         }
 
-        /* Контейнер с вакансией */
         .job-container {
             background-color: var(--bg-card);
             padding: 20px;
             flex: 1;
             overflow-y: auto;
-            margin-bottom: 150px; /* Отступ для нижней панели */
+            margin-bottom: 150px; 
         }
 
         .job-title {
@@ -119,7 +117,6 @@
             color: var(--text-muted);
         }
 
-        /* Описание вакансии */
         .job-description {
             font-size: 15px;
             line-height: 1.5;
@@ -136,7 +133,6 @@
             margin: 0 0 15px 0;
         }
 
-        /* ЛОВУШКА */
         .trap-box {
             background-color: #fff9e6;
             border-left: 4px solid #ffb300;
@@ -146,7 +142,6 @@
             font-size: 14px;
         }
 
-        /* Нижняя панель с кнопками */
         .action-area {
             background-color: var(--bg-card);
             padding: 15px 20px;
@@ -233,10 +228,7 @@
     </div>
 
     <div class="action-area">
-        <!-- Неправильный ответ: Игрок ведется на деньги и соглашается -->
         <button class="btn btn-apply" onclick="sendResult(false)">Откликнуться на вакансию</button>
-        
-        <!-- Правильный ответ: Игрок заметил ловушку с Apple ID -->
         <button class="btn btn-report" onclick="sendResult(true)">Закрыть</button>
     </div>
 
