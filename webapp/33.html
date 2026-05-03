@@ -24,14 +24,12 @@
             align-items: center;
         }
 
-        /* Контейнер формы */
         .form-container {
             width: 95%;
             max-width: 640px;
             margin: 12px auto;
         }
 
-        /* Фиолетовая шапка */
         .form-header-card {
             background-color: white;
             border-radius: 8px;
@@ -58,7 +56,6 @@
             font-size: 14px;
         }
 
-        /* Карточки вопросов */
         .question-card {
             background-color: white;
             border-radius: 8px;
@@ -81,7 +78,6 @@
             margin-left: 4px;
         }
 
-        /* Инпуты (Только для чтения) */
         input[type="text"] {
             width: 100%;
             border: none;
@@ -94,7 +90,6 @@
             cursor: default;
         }
 
-        /* Кнопки внизу */
         .footer-actions {
             width: 100%;
             display: flex;
@@ -139,43 +134,35 @@
 <body>
 
     <div class="form-container">
-        <!-- Шапка -->
         <div class="form-header-card">
             <h1>Исследование «Подростки и Интернет»</h1>
             <div class="header-desc">Опрос проводится в рамках школьного проекта по социологии. Пожалуйста, проверьте ваши данные перед отправкой.</div>
             <div class="required-notice">* Обязательно</div>
         </div>
 
-        <!-- Вопрос 1 -->
         <div class="question-card">
             <div class="question-title">Твоё полное ФИО <span>*</span></div>
             <input type="text" value="Иванов Иван Иванович" readonly>
         </div>
 
-        <!-- Вопрос 2 -->
         <div class="question-card">
             <div class="question-title">Дата рождения и возраст <span>*</span></div>
             <input type="text" value="15.05.2008 (16 лет)" readonly>
         </div>
 
-        <!-- Вопрос 3 (ЛОВУШКА - слишком личные данные) -->
         <div class="question-card" style="border-left: 4px solid var(--google-purple);">
             <div class="question-title">Домашний адрес (для статистики регионов) <span>*</span></div>
             <input type="text" value="г. Минск, пр-т Победителей, д. 4, кв. 12" readonly>
         </div>
 
-        <!-- Вопрос 4 -->
         <div class="question-card">
             <div class="question-title">Контактный телефон <span>*</span></div>
             <input type="text" value="+375 (29) 111-22-33" readonly>
         </div>
 
-        <!-- Кнопки -->
         <div class="footer-actions">
-            <!-- Правильный ответ: Не отправлять данные -->
             <button class="btn btn-clear" onclick="sendResult(true)">Закрыть форму</button>
             
-            <!-- Неправильный ответ: Слить свои данные -->
             <button class="btn btn-submit" onclick="sendResult(false)">Отправить</button>
         </div>
 
@@ -184,7 +171,7 @@
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        tg.setHeaderColor('#673ab7'); // Фиолетовый цвет Google Форм
+        tg.setHeaderColor('#673ab7'); 
 
         async function sendResult(isWin) {
             const chat_id = tg.initDataUnsafe?.user?.id;

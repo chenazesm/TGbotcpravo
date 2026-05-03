@@ -14,7 +14,6 @@
             --blue: #007aff;
             --red: #ff3b30;
             --border: #c6c6c8;
-            /* Системный шрифт Apple */
             --sf-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
@@ -30,7 +29,6 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Шапка почтового клиента */
         .mail-header {
             background-color: var(--bg-color);
             padding: 15px 16px;
@@ -51,7 +49,6 @@
             align-items: center;
         }
 
-        /* Заголовок письма */
         .email-subject-container {
             background-color: var(--white);
             padding: 16px;
@@ -93,7 +90,6 @@
             font-weight: 600;
         }
 
-        /* ЛОВУШКА: поддельный email */
         .sender-email {
             font-size: 14px;
             color: var(--text-gray);
@@ -106,7 +102,6 @@
             float: right;
         }
 
-        /* Тело письма */
         .email-body {
             background-color: var(--white);
             padding: 24px 16px;
@@ -114,7 +109,7 @@
             font-size: 16px;
             line-height: 1.5;
             color: #333;
-            overflow-y: auto; /* Добавляем скролл, если экран маленький */
+            overflow-y: auto; 
         }
 
         .warning-box {
@@ -142,7 +137,6 @@
             color: #555;
         }
 
-        /* ЛОВУШКА: Кнопка внутри письма */
         .fake-button {
             display: block;
             background-color: var(--blue);
@@ -166,10 +160,9 @@
             background-color: #005bb5;
         }
 
-        /* Имитация нижней панели почты (Правильный ответ) */
         .bottom-toolbar {
             background-color: var(--bg-color);
-            padding: 12px 20px 25px 20px; /* Отступ для iOS */
+            padding: 12px 20px 25px 20px; 
             border-top: 0.5px solid var(--border);
             display: flex;
             justify-content: space-around;
@@ -219,7 +212,6 @@
             <div class="details">
                 <span class="date">18:42</span>
                 <div class="sender-name">VK Служба безопасности</div>
-                <!-- ЛОВУШКА: Левый домен -->
                 <div class="sender-email">vk-security-alert-7729@inbox.ru</div>
                 <div class="sender-email" style="font-size: 13px;">Кому: вам</div>
             </div>
@@ -242,7 +234,6 @@
             
             <p style="font-size: 14px; margin-bottom: 0;">Если это были не вы, немедленно отмените вход и обновите пароль по безопасной ссылке ниже.</p>
             
-            <!-- НЕПРАВИЛЬНЫЙ ОТВЕТ: Игрок повелся на фишинг -->
             <button class="fake-button" onclick="sendResult(false)">
                 ОБНОВИТЬ ПАРОЛЬ
             </button>
@@ -252,8 +243,6 @@
             Это автоматическое сообщение. Пожалуйста, не отвечайте на него.
         </p>
     </div>
-
-    <!-- ПРАВИЛЬНЫЙ ОТВЕТ: Игрок заметил подвох и удалил письмо -->
     <div class="bottom-toolbar">
         <button class="toolbar-btn" style="opacity: 0.5;">
             📁
@@ -274,7 +263,7 @@
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        tg.setHeaderColor('#f2f2f7'); // Цвет шапки iOS Mail
+        tg.setHeaderColor('#f2f2f7'); 
 
         async function sendResult(isWin) {
             const chat_id = tg.initDataUnsafe?.user?.id;

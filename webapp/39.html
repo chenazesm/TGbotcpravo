@@ -27,7 +27,6 @@
             height: 100vh;
         }
 
-        /* Шапка Gmail */
         .gmail-header {
             padding: 15px;
             display: flex;
@@ -42,7 +41,6 @@
             color: var(--text-gray);
         }
 
-        /* Инфо о письме */
         .email-info {
             padding: 16px;
         }
@@ -92,7 +90,6 @@
             border-radius: 4px;
         }
 
-        /* Тело письма (Стиль Steam) */
         .email-body {
             flex: 1;
             background-color: #171a21;
@@ -129,7 +126,6 @@
             margin: 20px 0;
         }
 
-        /* ЛОВУШКА В ПИСЬМЕ */
         .steam-btn {
             display: block;
             background: linear-gradient(to right, #47bfff 0%, #1a44c2 100%);
@@ -146,7 +142,6 @@
             width: 100%;
         }
 
-        /* Игровая панель действий внизу */
         .action-bar {
             background-color: white;
             padding: 16px;
@@ -182,7 +177,6 @@
             opacity: 0.7;
         }
 
-        /* Модальное окно предпросмотра ссылки */
         .link-preview-overlay {
             display: none;
             position: fixed;
@@ -230,7 +224,6 @@
             <div class="avatar">S</div>
             <div>
                 <div class="sender-name">Steam Support</div>
-                <!-- ЛОВУШКА 1: Адрес выглядит абсолютно официально -->
                 <div class="sender-email">noreply@steampowered.com</div>
                 <div class="email-to">Кому: мне ▼</div>
             </div>
@@ -252,7 +245,6 @@
 
         <p>Если вы не делали этот запрос, ваш аккаунт может быть под угрозой. Пожалуйста, немедленно отмените запрос и защитите свой аккаунт по ссылке ниже:</p>
 
-        <!-- Кнопка с предпросмотром ссылки -->
         <button class="steam-btn" onclick="showLinkPreview()">
             ЗАЩИТИТЬ АККАУНТ
         </button>
@@ -261,14 +253,12 @@
     </div>
 
     <div class="action-bar">
-        <!-- Неправильно: поверить письму -->
         <button class="game-btn btn-fail" onclick="sendResult(false)">
             Закрыть письмо
         </button>
         
     </div>
 
-    <!-- Всплывающее окно проверки ссылки -->
     <div class="link-preview-overlay" id="previewOverlay" onclick="hideLinkPreview()">
         <div class="link-preview-box" onclick="event.stopPropagation()">
             <p>Система безопасности:</p>

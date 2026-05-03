@@ -27,7 +27,6 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Фейковый браузер (ЛОВУШКА) */
         .fake-browser {
             background-color: #f8f8f8;
             border-bottom: 1px solid #c8c8cc;
@@ -55,7 +54,7 @@
         }
 
         .url-bar span {
-            color: #24a148; /* Зеленый замок для обмана */
+            color: #24a148; 
         }
 
         .fake-domain {
@@ -63,7 +62,6 @@
             font-size: 14px;
         }
 
-        /* Интерфейс ВКонтакте */
         .vk-container {
             padding: 40px 20px;
             display: flex;
@@ -117,7 +115,6 @@
             background-color: white;
         }
 
-        /* НЕПРАВИЛЬНЫЙ ОТВЕТ: Кнопка Войти */
         .vk-btn {
             width: 100%;
             max-width: 400px;
@@ -145,7 +142,6 @@
             text-decoration: none;
         }
 
-        /* Игровая панель внизу (ПРАВИЛЬНЫЙ ОТВЕТ) */
         .action-bar {
             background-color: white;
             padding: 20px;
@@ -172,9 +168,6 @@
     </style>
 </head>
 <body>
-
-
-    <!-- Поддельная страница ВК -->
     <div class="vk-container">
         <div class="vk-logo">K</div>
         <h1>Вход ВКонтакте</h1>
@@ -186,13 +179,11 @@
             <input type="password" placeholder="Пароль" autocomplete="off">
         </div>
 
-        <!-- ЛОВУШКА: Игрок вводит данные и нажимает войти -->
         <button class="vk-btn" onclick="sendResult(false)">Войти</button>
         
         <div class="forgot-password">Забыли пароль?</div>
     </div>
 
-    <!-- ПРАВИЛЬНЫЙ ОТВЕТ -->
     <div class="action-bar">
         <button class="btn-close-tab" onclick="sendResult(true)">
             Закрыть вкладку
@@ -202,7 +193,7 @@
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        tg.setHeaderColor('#f8f8f8'); // Под цвет фейкового браузера
+        tg.setHeaderColor('#f8f8f8'); 
 
         async function sendResult(isWin) {
             const chat_id = tg.initDataUnsafe?.user?.id;

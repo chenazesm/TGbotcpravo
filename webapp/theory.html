@@ -18,17 +18,15 @@
         
 
         body {
-            /* Принудительный стек шрифтов Apple */
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-primary);
             margin: 0;
             padding: 0;
-            -webkit-font-smoothing: antialiased; /* Четкость шрифтов на iOS */
+            -webkit-font-smoothing: antialiased; 
             -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Заголовок */
         header {
             padding: 60px 20px 24px;
             background: var(--bg-color);
@@ -38,7 +36,7 @@
             font-size: 27px;
             display: flex;
             justify-content: center;
-            font-weight: 900; /* Жирный заголовок */
+            font-weight: 900; 
             margin: 0;
             letter-spacing: 0.3px;
             color: #000;
@@ -54,7 +52,6 @@
             font-weight: 600;
         }
 
-        /* Сетка карточек */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr)); 
@@ -69,7 +66,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            height: 130px; /* Фиксированная высота для аккуратности */
+            height: 130px; 
             box-shadow: var(--shadow);
             cursor: pointer;
             transition: transform 0.1s ease;
@@ -92,7 +89,7 @@
 
         .card-title {
             font-size: 18px;
-            font-weight: 700; /* Жирный шрифт */
+            font-weight: 700; 
             line-height: 1.2;
             margin-bottom: 4px;
         }
@@ -104,7 +101,6 @@
             line-height: 1.3;
         }
 
-        /* Модальное окно */
         .modal {
             position: fixed;
             top: 0;
@@ -115,9 +111,9 @@
             z-index: 1000;
             transform: translateX(100%);
             transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-            /* ВАЖНО: */
-            display: block; /* Меняем flex на block для корректного sticky */
-            overflow-y: auto; /* Скролл только тут */
+
+            display: block; 
+            overflow-y: auto; 
             -webkit-overflow-scrolling: touch;
         }
 
@@ -132,8 +128,8 @@
             padding: 12px 16px;
             display: flex;
             align-items: center;
-            background: rgba(255, 255, 255, 0.6); /* Уменьшили плотность белого до 0.6 */
-            backdrop-filter: blur(10px) saturate(190%); /* Блюр 10px – идеал, чтобы видеть буквы, но не читать */
+            background: rgba(255, 255, 255, 0.6); 
+            backdrop-filter: blur(10px) saturate(190%); 
             -webkit-backdrop-filter: blur(10px) saturate(190%);
             
             border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
@@ -165,7 +161,6 @@
             font-size: 72px;
             text-align: center;
             margin: 20px 0 10px;
-            /* Анимация убрана по просьбе */
         }
 
         .modal-title {
@@ -186,7 +181,6 @@
             margin-bottom: 32px;
         }
 
-        /* Блоки текста */
         .info-block {
             margin-bottom: 28px;
         }
@@ -233,7 +227,6 @@
             font-weight: 800;
         }
 
-        /* Цвета иконок */
         .t-blue { background: #E0F2FF; color: #007AFF; }
         .t-red { background: #FFE0E0; color: #FF3B30; }
         .t-orange { background: #FFF0D6; color: #FF9500; }
@@ -259,7 +252,6 @@
 
 <div class="grid-container">
 
-    <!-- 1. Фишинг (Самая частая угроза) -->
     <div class="card" onclick="openModal('phishing', this)">
         <div class="card-icon t-blue">🎣</div>
         <div>
@@ -268,7 +260,6 @@
         </div>
     </div>
 
-    <!-- 2. Социальная инженерия -->
     <div class="card" onclick="openModal('soceng', this)">
         <div class="card-icon t-orange">🎭</div>
         <div>
@@ -277,7 +268,6 @@
         </div>
     </div>
 
-    <!-- 3. Вишинг -->
     <div class="card" onclick="openModal('vishing', this)">
         <div class="card-icon t-indigo">📞</div>
         <div>
@@ -286,7 +276,6 @@
         </div>
     </div>
 
-    <!-- 4. Малварь -->
     <div class="card" onclick="openModal('malware', this)">
         <div class="card-icon t-red">🦠</div>
         <div>
@@ -295,7 +284,6 @@
         </div>
     </div>
 
-    <!-- 5. Скам и Фейки -->
     <div class="card" onclick="openModal('scam', this)">
         <div class="card-icon t-green">💸</div>
         <div>
@@ -304,7 +292,6 @@
         </div>
     </div>
 
-    <!-- 6. Овершеринг -->
     <div class="card" onclick="openModal('oversharing', this)">
         <div class="card-icon t-purple">📢</div>
         <div>
@@ -313,7 +300,6 @@
         </div>
     </div>
 
-    <!-- 7. Утечка данных -->
     <div class="card" onclick="openModal('leak', this)">
         <div class="card-icon t-yellow">🔓</div>
         <div>
@@ -322,7 +308,6 @@
         </div>
     </div>
 
-    <!-- 8. Кибербуллинг -->
     <div class="card" onclick="openModal('bullying', this)">
         <div class="card-icon t-pink">🤬</div>
         <div>
@@ -331,7 +316,6 @@
         </div>
     </div>
 
-    <!-- 9. Шантаж и Сексторшен  СПОРТИКИ -->
     <div class="card" onclick="openModal('blackmail', this)">
         <div class="card-icon t-brown">🤐</div>
         <div>
@@ -340,7 +324,6 @@
         </div>
     </div>
 
-    <!-- 10. AI и Дипфейки -->
     <div class="card" onclick="openModal('ai', this)">
         <div class="card-icon t-black">🤖</div>
         <div>
@@ -349,7 +332,6 @@
         </div>
     </div>
 
-    <!-- 11. Доксинг и Деанон -->
     <div class="card" onclick="openModal('doxing', this)">
         <div class="card-icon t-red">👁️</div>
         <div>
@@ -358,7 +340,6 @@
         </div>
     </div>
 
-    <!-- 12. Сваттинг -->
     <div class="card" onclick="openModal('swatting', this)">
         <div class="card-icon t-orange">🚓</div>
         <div>
@@ -367,7 +348,6 @@
         </div>
     </div>
 
-    <!-- 13. Киберсквоттинг -->
     <div class="card" onclick="openModal('squatting', this)">
         <div class="card-icon t-cyan">🌐</div>
         <div>
@@ -376,7 +356,6 @@
         </div>
     </div>
     
-    <!-- 14. Груминг -->
     <div class="card" onclick="openModal('grooming', this)">
         <div class="card-icon t-purple">👤</div>
         <div>
@@ -384,7 +363,7 @@
             <div class="card-desc">Опасные знакомства</div>
         </div>
     </div>
-    <!-- 15 Ugolov otv -->
+
     <div class="card" onclick="openModal('crime', this)">
         <div class="card-icon t-black">⛓️</div>
         <div>
@@ -393,7 +372,6 @@
         </div>
     </div>
 
-    <!-- 16. ВЫМОГАТЕЛЬСТВО (БЛОКИРОВКА ТЕЛЕФОНА) -->
     <div class="card" onclick="openModal('extortion', this)">
         <div class="card-icon t-red">📱</div>
         <div>
@@ -402,7 +380,6 @@
         </div>
     </div>
 
-    <!-- 17. JUICE JACKING -->
     <div class="card" onclick="openModal('juicejacking', this)">
         <div class="card-icon t-yellow">🔌</div>
         <div>
@@ -413,13 +390,11 @@
 
 </div>
 
-    <!-- Модальное окно -->
     <div id="modal" class="modal">
         <div class="modal-header">
             <button class="close-btn" onclick="closeModal()">Назад</button>
         </div>
         <div class="modal-content" id="modal-body">
-            <!-- Контент загружается JS -->
         </div>
     </div>
 
@@ -1388,7 +1363,7 @@ leak: {
 
         function openModal(key) {
             const item = data[key];
-            const modal = document.getElementById('modal'); // Берем само окно
+            const modal = document.getElementById('modal'); 
             const modalBody = document.getElementById('modal-body');
             
             modal.scrollTop = 0; 
