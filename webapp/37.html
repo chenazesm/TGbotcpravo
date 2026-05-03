@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Вход | ВКонтакте</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --vk-blue: #0077FF;
+            --vk-bg: #ffffff;
+            --vk-input-bg: #f2f3f5;
+            --vk-text: #000000;
+            --vk-gray: #818c99;
+            --sf-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            font-family: var(--sf-font);
+            background-color: var(--vk-bg);
+            color: var(--vk-text);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Фейковый браузер (ЛОВУШКА) */
+        .fake-browser {
+            background-color: #f8f8f8;
+            border-bottom: 1px solid #c8c8cc;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .url-bar {
+            background-color: #e3e3e5;
+            border-radius: 12px;
+            padding: 8px 15px;
+            width: 100%;
+            text-align: center;
+            font-size: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .url-bar span {
+            color: #24a148; /* Зеленый замок для обмана */
+        }
+
+        .fake-domain {
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        /* Интерфейс ВКонтакте */
+        .vk-container {
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .vk-logo {
+            width: 56px;
+            height: 56px;
+            background-color: var(--vk-blue);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 32px;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0 0 24px 0;
+            text-align: center;
+        }
+
+        .input-group {
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 16px;
+        }
+
+        input {
+            width: 100%;
+            background-color: var(--vk-input-bg);
+            border: 1px solid transparent;
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 16px;
+            font-family: var(--sf-font);
+            box-sizing: border-box;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        input:focus {
+            border: 1px solid var(--vk-blue);
+            background-color: white;
+        }
+
+        /* НЕПРАВИЛЬНЫЙ ОТВЕТ: Кнопка Войти */
+        .vk-btn {
+            width: 100%;
+            max-width: 400px;
+            background-color: var(--vk-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 500;
+            font-family: var(--sf-font);
+            cursor: pointer;
+            margin-top: 8px;
+            transition: opacity 0.2s;
+        }
+
+        .vk-btn:active {
+            opacity: 0.8;
+        }
+
+        .forgot-password {
+            color: var(--vk-blue);
+            font-size: 14px;
+            margin-top: 16px;
+            text-decoration: none;
+        }
+
+        /* Игровая панель внизу (ПРАВИЛЬНЫЙ ОТВЕТ) */
+        .action-bar {
+            background-color: white;
+            padding: 20px;
+            border-top: 1px solid #e5e5ea;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+
+        .btn-close-tab {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background-color: #f2f2f7;
+            color: #ff3b30;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: var(--sf-font);
+            cursor: pointer;
+        }
+
+        .btn-close-tab:active {
+            background-color: #e5e5ea;
+        }
+    </style>
+</head>
+<body>
+
+
+    <!-- Поддельная страница ВК -->
+    <div class="vk-container">
+        <div class="vk-logo">K</div>
+        <h1>Вход ВКонтакте</h1>
+        
+        <div class="input-group">
+            <input type="text" placeholder="Телефон или почта" autocomplete="off">
+        </div>
+        <div class="input-group">
+            <input type="password" placeholder="Пароль" autocomplete="off">
+        </div>
+
+        <!-- ЛОВУШКА: Игрок вводит данные и нажимает войти -->
+        <button class="vk-btn" onclick="sendResult(false)">Войти</button>
+        
+        <div class="forgot-password">Забыли пароль?</div>
+    </div>
+
+    <!-- ПРАВИЛЬНЫЙ ОТВЕТ -->
+    <div class="action-bar">
+        <button class="btn-close-tab" onclick="sendResult(true)">
+            Закрыть вкладку
+        </button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.setHeaderColor('#f8f8f8'); // Под цвет фейкового браузера
+
+        async function sendResult(isWin) {
+            const chat_id = tg.initDataUnsafe?.user?.id;
+
+            if (!chat_id) {
+                alert("Ошибка: Запустите через бота!");
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/submit_answer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: chat_id,
+                        is_win: isWin
+                    })
+                });
+
+                if (response.ok) {
+                    tg.close();
+                }
+            } catch (e) {
+                console.error("Ошибка:", e);
+            }
+        }
+    </script>
+</body>
+</html>

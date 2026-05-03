@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Публикация</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --ig-bg: #ffffff;
+            --ig-text: #262626;
+            --ig-gray: #8e8e8e;
+            --ig-blue: #0095f6;
+            --ig-border: #dbdbdb;
+            --sf-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        }
+
+        body {
+            font-family: var(--sf-font);
+            background-color: var(--ig-bg);
+            color: var(--ig-text);
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+            padding-bottom: 160px; /* Добавляем место, чтобы кнопки не перекрывали текст */
+        }
+
+        /* Шапка профиля */
+        .header {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--ig-border);
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #eee;
+            margin-right: 12px;
+        }
+
+        .username {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .verified-badge {
+            color: #3897f0;
+            font-size: 12px;
+            margin-left: 4px;
+        }
+
+        /* Контент поста */
+        .post-img {
+            width: 100%;
+            aspect-ratio: 1/1;
+            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .post-img h1 {
+            font-size: 32px;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .winners-list {
+            margin-top: 20px;
+            font-weight: 600;
+            font-size: 18px;
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 12px;
+        }
+
+        .your-nick {
+            color: #ffff00;
+            text-decoration: underline;
+        }
+
+        /* Описание поста */
+        .post-description {
+            padding: 12px 16px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .description-text b {
+            color: var(--ig-blue);
+        }
+
+        /* Кнопки действий (ИГРОВЫЕ) */
+        .action-area {
+            padding: 20px 16px;
+            border-top: 1px solid var(--ig-border);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: white;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-family: var(--sf-font);
+        }
+
+        .btn-claim {
+            background-color: var(--ig-blue);
+            color: white;
+        }
+
+        .btn-report {
+            background-color: #efefef;
+            color: #262626;
+        }
+
+        .btn:active {
+            opacity: 0.7;
+        }
+
+        /* ЛОВУШКА: Ник аккаунта */
+        .account-clue {
+            font-size: 12px;
+            color: var(--ig-gray);
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="avatar" style="background-image: url('https://yt3.googleusercontent.com/ytc/AIdro_mN0Qv-XW9e-97zN5FqW7Z3S9z1=s176-c-k-c0x00ffffff-no-rj'); background-size: cover;"></div>
+        <div>
+            <!-- ЛОВУШКА: vlad_a4_officiall (лишняя 'l') -->
+            <div class="username">vlad_a4_officiall</div>
+            <div style="font-size: 12px; color: var(--ig-gray);">Спонсорский пост</div>
+        </div>
+    </div>
+
+    <div class="post-img">
+        <h1>ПОЗДРАВЛЯЕМ!</h1>
+        <div class="winners-list">
+            1. @user_883<br>
+            2. <span class="your-nick">@ivanov_vanya</span> 🏆<br>
+            3. @nastiksss
+        </div>
+        <p style="font-size: 14px; margin-top: 15px;">Вы выиграли 400 BYN!</p>
+    </div>
+
+    <div class="post-description">
+        <div class="description-text">
+            <span class="username">vlad_a4_officell</span>
+            Мы выбрали 10 самых активных подписчиков за неделю! 🎁 Чтобы забрать свой приз, перейдите по ссылке в описании профиля и напишите нашему менеджеру кодовое слово "А4".
+        </div>
+        <div style="margin-top: 10px; color: var(--ig-gray); font-size: 12px;">34 минуты назад</div>
+    </div>
+
+    <div class="action-area">
+        <button class="btn btn-claim" onclick="sendResult(false)">Перейти в профиль</button>
+        <button class="btn btn-report" onclick="sendResult(true)">Заблокировать</button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.setHeaderColor('#ffffff');
+
+        async function sendResult(isWin) {
+            const chat_id = tg.initDataUnsafe?.user?.id;
+            if (!chat_id) {
+                alert("Ошибка: Запустите через бота!");
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/submit_answer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: chat_id, is_win: isWin })
+                });
+                if (response.ok) tg.close();
+            } catch (e) { console.error(e); }
+        }
+    </script>
+</body>
+</html>

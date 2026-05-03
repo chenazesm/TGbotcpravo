@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kufar Сообщения</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --kufar-blue: #2c3e50;
+            --kufar-green: #00b012;
+            --kufar-bg: #f4f7f9;
+            --kufar-orange: #0d7c03;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--kufar-bg);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Шапка в стиле Куфара */
+        .header {
+            background: white;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #e0e6eb;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .back-button {
+            margin-right: 15px;
+            font-size: 20px;
+            color: var(--kufar-blue);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #d1d9e0;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--kufar-blue);
+        }
+
+        .online-status {
+            font-size: 12px;
+            color: var(--kufar-green);
+        }
+
+        /* Окно сообщений */
+        .chat-container {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            margin-bottom: 15px;
+            line-height: 1.4;
+            position: relative;
+            font-size: 15px;
+        }
+
+        .incoming {
+            background: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            color: #333;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .system-time {
+            text-align: center;
+            font-size: 12px;
+            color: #8899a6;
+            margin: 10px 0;
+        }
+
+        .warning-link {
+            color: #007bff;
+            text-decoration: underline;
+            word-break: break-all;
+            display: block;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        /* Кнопки выбора внизу */
+        .action-area {
+            background: white;
+            padding: 20px;
+            border-top: 1px solid #e0e6eb;
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-trust {
+            background-color: #e8f0fe;
+            color: #1a73e8;
+        }
+
+        .btn-ban {
+            background-color: var(--kufar-orange);
+            color: white;
+        }
+
+        .btn:active {
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="back-button">←</div>
+        <div class="user-info">
+            <div class="avatar" style="background-color: #ff9800;">K</div>
+            <div>
+                <div class="user-name">Поддержка Kufar</div>
+                <div class="online-status">в сети</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-container">
+        <div class="system-time">Сегодня, 14:20</div>
+        
+        <div class="message incoming">
+            Здравствуйте! Ваше объявление нарушает правила площадки и будет удалено через 2 часа. 
+            <br><br>
+            Для подтверждения владения аккаунтом и отмены удаления, перейдите в личный кабинет:
+            <span class="warning-link">https://kufar-support.online/verify/id93821</span>
+        </div>
+    </div>
+
+    <div class="action-area">
+        <button class="btn btn-trust" onclick="sendResult(false)">Перейти</button>
+        <button class="btn btn-ban" onclick="sendResult(true)">Удалить</button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Разворачиваем на весь экран
+
+        async function sendResult(isWin) {
+            const chat_id = tg.initDataUnsafe?.user?.id;
+
+            if (!chat_id) {
+                alert("Ошибка: Данные пользователя не найдены (запустите через бота)");
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/submit_answer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: chat_id,
+                        is_win: isWin
+                    })
+                });
+
+                if (response.ok) {
+                    tg.close(); // Закрываем Web App после ответа
+                }
+            } catch (e) {
+                console.error("Ошибка отправки:", e);
+                alert("Проблема со связью с сервером");
+            }
+        }
+    </script>
+</body>
+</html>

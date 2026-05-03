@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Сведения о публикации</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-dark: #262626;
+            --text-gray: #8e8e8e;
+            --border-color: #dbdbdb;
+            --link-blue: #00376b;
+            --btn-blue: #0095f6;
+            --sf-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            font-family: var(--sf-font);
+            background-color: #fafafa;
+            color: var(--text-dark);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Шапка приложения */
+        .app-header {
+            width: 100%;
+            max-width: 500px;
+            background: var(--bg-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 16px;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-sizing: border-box;
+        }
+
+        .back-btn {
+            margin-right: 15px;
+            font-size: 20px;
+        }
+
+        /* Карточка поста */
+        .post-card {
+            width: 100%;
+            max-width: 500px;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            margin-top: 10px;
+            padding-bottom: 15px;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            padding: 2px;
+            margin-right: 10px;
+        }
+
+        .avatar-inner {
+            width: 100%;
+            height: 100%;
+            background-color: #ddd;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .username {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .location {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        /* Изображение поста */
+        .post-image {
+            width: 100%;
+            aspect-ratio: 1;
+            background-color: #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .post-image h2 {
+            font-size: 28px;
+            margin: 0 0 10px 0;
+            color: #ff3b30;
+        }
+
+        /* Действия с постом */
+        .post-actions {
+            padding: 12px 16px;
+            display: flex;
+            gap: 15px;
+            font-size: 24px;
+        }
+
+        /* Текст поста (ЛОВУШКА) */
+        .post-content {
+            padding: 0 16px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .likes {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .caption-username {
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        .scam-text {
+            background-color: #fff4f4;
+            padding: 10px;
+            border-left: 3px solid #ff3b30;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 13px;
+        }
+
+        .post-time {
+            font-size: 12px;
+            color: var(--text-gray);
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        /* Отключенные комментарии (ЛОВУШКА) */
+        .comments-disabled {
+            padding: 16px;
+            margin-top: 10px;
+            border-top: 1px solid var(--border-color);
+            font-size: 13px;
+            color: var(--text-gray);
+            text-align: center;
+        }
+
+        /* Панель кнопок */
+        .action-bar {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            padding: 15px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+            border-top: 1px solid #e5e5ea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: var(--sf-font);
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-donate {
+            background-color: var(--btn-blue);
+            color: white;
+        }
+
+        .btn-report {
+            background-color: #f2f2f7;
+            color: #ff3b30;
+        }
+
+        .btn:active {
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-header">
+        <div class="back-btn">←</div>
+        <div>Публикация</div>
+    </div>
+
+    <div class="post-card">
+        <div class="post-header">
+            <div class="avatar">
+                <div class="avatar-inner"></div>
+            </div>
+            <div>
+                <div class="username">shaman</div>
+                <div class="location">Минск, Беларусь</div>
+            </div>
+        </div>
+
+        <div class="post-image">
+            <h2>СРОЧНО!!!</h2>
+            <p>ПОМОГИТЕ СПАСТИ ЖИЗНЬ!</p>
+        </div>
+
+        <div class="post-actions">
+            <span>❤️</span>
+            <span>💬</span>
+            <span>✈️</span>
+        </div>
+
+        <div class="post-content">
+            <div class="likes">Нравится: 1 432</div>
+            <div>
+                <span class="caption-username">max_play_by</span>
+                😭 Никогда не просил о помощи, но сейчас ситуация критическая. Моя мама попала в страшное ДТП, нужна срочная операция, счет идет на минуты! Умоляю, кто сколько может. Я потом все отдам!!! 🙏🙏🙏
+                
+                <div class="scam-text">
+                    Перевод на карту Беларусбанка:<br>
+                    <b>4255 1234 5678 9012</b><br>
+                </div>
+            </div>
+            <div class="post-time">2 ЧАСА НАЗАД</div>
+        </div>
+
+        <div class="comments-disabled">
+            Комментарии к этой публикации отключены.
+        </div>
+    </div>
+
+    <div class="action-bar">
+        <!-- Неправильный ответ: довериться и перевести деньги -->
+        <button class="btn btn-donate" onclick="sendResult(false)">
+            Открыть приложение банка
+        </button>
+        
+        <!-- Правильный ответ: проверить через другие источники / пожаловаться -->
+        <button class="btn btn-report" onclick="sendResult(true)">
+            Игнорировать
+        </button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.setHeaderColor('#ffffff'); // Белая шапка как в Instagram
+
+        async function sendResult(isWin) {
+            const chat_id = tg.initDataUnsafe?.user?.id;
+
+            if (!chat_id) {
+                alert("Ошибка: Запустите через бота!");
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/submit_answer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: chat_id,
+                        is_win: isWin
+                    })
+                });
+
+                if (response.ok) {
+                    tg.close();
+                }
+            } catch (e) {
+                console.error("Ошибка отправки:", e);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kufar</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --kufar-blue: #2c3e50;
+            --kufar-green: #00b012;
+            --kufar-bg: #f4f7f9;
+            --kufar-red: #d32f2f;
+            --sf-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            font-family: var(--sf-font);
+            background-color: var(--kufar-bg);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Шапка в стиле Куфара */
+        .header {
+            background: white;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #e0e6eb;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .back-button {
+            margin-right: 15px;
+            font-size: 20px;
+            color: var(--kufar-blue);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #9c27b0;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 16px;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--kufar-blue);
+        }
+
+        .online-status {
+            font-size: 11px;
+            color: var(--kufar-green);
+        }
+
+        /* ПРАВИЛЬНЫЙ ОТВЕТ: Кнопка "Блок" в шапке */
+        .header-actions {
+            margin-left: auto; /* Отодвигает кнопку в правый край */
+        }
+
+        .block-btn {
+            background-color: #ffebee;
+            color: var(--kufar-red);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: var(--sf-font);
+            transition: background-color 0.2s;
+        }
+
+        .block-btn:active {
+            background-color: #ffcdd2;
+        }
+
+        /* Окно сообщений */
+        .chat-container {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            margin-bottom: 15px;
+            line-height: 1.4;
+            position: relative;
+            font-size: 15px;
+        }
+
+        /* Сообщение от покупателя */
+        .incoming {
+            background: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            color: #333;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* Сообщение от тебя (продавца) */
+        .outgoing {
+            background: #e1f5fe;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+            color: #0277bd;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .system-time {
+            text-align: center;
+            font-size: 12px;
+            color: #8899a6;
+            margin: 10px 0 20px 0;
+        }
+
+        /* НЕПРАВИЛЬНЫЙ ОТВЕТ: Ловушка-ссылка */
+        .fake-link {
+            color: #0056b3;
+            text-decoration: underline;
+            word-break: break-all;
+            display: block;
+            margin-top: 10px;
+            font-weight: 600;
+            background: #f0f8ff;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #cce5ff;
+            cursor: pointer; /* Курсор меняется при наведении */
+            transition: opacity 0.2s;
+        }
+
+        .fake-link:active {
+            opacity: 0.6;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="back-button">←</div>
+        <div class="user-info">
+            <div class="avatar">А</div>
+            <div>
+                <div class="user-name">Александр</div>
+                <div class="online-status">Был(а) только что</div>
+            </div>
+        </div>
+        <!-- Кнопка "Блок" перенесена наверх -->
+        <div class="header-actions">
+            <button class="block-btn" onclick="sendResult(true)">Блок</button>
+        </div>
+    </div>
+
+    <div class="chat-container">
+        <div class="system-time">Сегодня, 11:30</div>
+        
+        <div class="message incoming">
+            Здравствуйте! Объявление еще актуально? Готов забрать без примерки.
+        </div>
+
+        <div class="message outgoing">
+            Добрый день. Да, актуально.
+        </div>
+
+        <div class="message incoming">
+            Отлично. Я сам из Бреста, давайте оформим доставку Европочтой? Я уже всё оплатил онлайн через безопасную сделку.
+            <br><br>
+            Вам нужно только подтвердить получение денег на вашу карту по ссылке ниже. Курьер сам к вам приедет и заберет посылку.
+            
+            <!-- КЛИКАБЕЛЬНАЯ ССЫЛКА-ЛОВУШКА -->
+            <div class="fake-link" onclick="sendResult(false)">
+                https://kufar.cc-pay.info/receive/order99321
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand(); 
+        tg.setHeaderColor('#ffffff');
+
+        async function sendResult(isWin) {
+            const chat_id = tg.initDataUnsafe?.user?.id;
+
+            if (!chat_id) {
+                alert("Ошибка: Запустите через бота!");
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/submit_answer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: chat_id,
+                        is_win: isWin
+                    })
+                });
+
+                if (response.ok) {
+                    tg.close();
+                }
+            } catch (e) {
+                console.error("Ошибка отправки:", e);
+                alert("Проблема со связью с сервером");
+            }
+        }
+    </script>
+</body>
+</html>
