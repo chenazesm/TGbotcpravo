@@ -4,6 +4,8 @@ import logging
 import threading
 import time
 import random
+import requests
+import re
 from typing import Dict, Any, List
 
 import telebot
@@ -14,6 +16,7 @@ import redis
 TG_TOKEN = os.getenv("TG_BOT_TOKEN")
 CALLBACK_SECRET = os.getenv("CALLBACK_SECRET", "secret")
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+AI_KEY = os.getenv("DEEPSEEK_API_KEY")
 
 WEBHOOK_URL = "https://cybertutor.ru"
 
@@ -37,11 +40,64 @@ try:
 except Exception as e:
     logger.error(f"Ошибка загрузки сценариев: {e}")
 
+def evaluate_with_ai(scenario_text, threat, correct_actions, user_answer):
+    clean_key = str(AI_KEY).strip() if AI_KEY else None
+    
+    if not clean_key or clean_key == "None":
+        return {"is_correct": False, "ai_comment": "Ошибка: API ключ не считан из .env."}
+
+    prompt = f"""
+    Ситуация: {scenario_text}
+    Тип угрозы: {threat}
+    Пользователь ответил: {user_answer}
+    Верни ответ СТРОГО в формате JSON:
+    {{"is_correct": true/false, "ai_comment": "короткое пояснение на русском"}}
+    """
+
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {clean_key}",
+        "Content-Type": "application/json"
+    }
+    
+    data = {
+        "model": "llama-3.1-8b-instant", 
+        "messages": [
+            {
+                "role": "user", 
+                "content": prompt
+            }
+        ],
+        "temperature": 0.2
+    }
+
+    try:
+        response = requests.post(url, headers=headers, json=data, timeout=10)
+        
+        if response.status_code != 200:
+            logger.error(f"GROQ ERROR: {response.status_code} - {response.text}")
+            return {
+                "is_correct": False, 
+                "ai_comment": f"Ошибка {response.status_code}. Проверьте правильность ключа в .env"
+            }
+            
+        res_json = response.json()
+        content = res_json['choices'][0]['message']['content']
+        
+        match = re.search(r'\{.*\}', content, re.DOTALL)
+        if match:
+            return json.loads(match.group())
+        return json.loads(content)
+
+    except Exception as e:
+        logger.error(f"AI ERROR: {str(e)}")
+        return {"is_correct": False, "ai_comment": "Техническая ошибка связи."}
+
 def get_player(chat_id):
     key = f"player:{chat_id}"
     raw = redis_client.get(key)
     if raw: return json.loads(raw)
-    p = {"hp": 100, "xp": 0, "idx": 0, "mistakes": {}}
+    p = {"hp": 100, "xp": 0, "idx": 0, "mistakes": {}, "ai_mode": True}
     save_player(chat_id, p)
     return p
 
@@ -83,44 +139,52 @@ def send_level(chat_id):
 
         else:
             markup = types.InlineKeyboardMarkup(row_width=1)
-            action_buttons = []
             
-            if "btn_trust" in task:
-                action_buttons.append(types.InlineKeyboardButton(task["btn_trust"], callback_data=f"ans:{idx}:trust"))
-
-            if "btn_check" in task:
-                action_buttons.append(types.InlineKeyboardButton(task["btn_check"], callback_data=f"ans:{idx}:check"))
-
-            if "btn_ban" in task:
-                action_buttons.append(types.InlineKeyboardButton(task["btn_ban"], callback_data=f"ans:{idx}:ban"))
-
-            random.shuffle(action_buttons)
-
-            for btn in action_buttons:
-                markup.add(btn)
-
-            markup.add(types.InlineKeyboardButton("💡 Подсказка", callback_data=f"hint:{idx}"))
+            if p.get("ai_mode", True):
+                markup.add(types.InlineKeyboardButton("💡 Подсказка", callback_data=f"hint:{idx}"))
+                instructions = "\n\n✍️ <i>Напиши текстом в чат, как ты поступишь в этой ситуации:</i>"
+                display_text = text + instructions
+            
+            else:
+                action_buttons = []
+                if "btn_trust" in task:
+                    action_buttons.append(types.InlineKeyboardButton(task["btn_trust"], callback_data=f"ans:{idx}:trust"))
+                if "btn_check" in task:
+                    action_buttons.append(types.InlineKeyboardButton(task["btn_check"], callback_data=f"ans:{idx}:check"))
+                if "btn_ban" in task:
+                    action_buttons.append(types.InlineKeyboardButton(task["btn_ban"], callback_data=f"ans:{idx}:ban"))
+                
+                random.shuffle(action_buttons)
+                for btn in action_buttons:
+                    markup.add(btn)
+                
+                markup.add(types.InlineKeyboardButton("💡 Подсказка", callback_data=f"hint:{idx}"))
+                display_text = text
 
             if voice_file:
                 voice_path = os.path.join(WEBAPP_DIR, voice_file)
                 try:
                     with open(voice_path, 'rb') as v_file:
-                        bot.send_voice(chat_id, v_file, caption=text, reply_markup=markup)
+                        bot.send_voice(chat_id, v_file, caption=display_text, reply_markup=markup, parse_mode="HTML")
                 except Exception as e:
-                    # if tg Premium блокирует голосовые сообщения
                     if "VOICE_MESSAGES_FORBIDDEN" in str(e):
-                        fallback_text = f"🎧 <i>[Ваши настройки Telegram блокируют получение голосовых сообщений, повторите попытку]</i>\n\n{text}"
-                        bot.send_message(chat_id, fallback_text, reply_markup=markup, parse_mode="HTML")
-                    else:
-                        raise e
+                        bot.send_message(chat_id, f"🎧 <i>[Голосовое сообщение заблокировано]</i>\n\n{display_text}", reply_markup=markup, parse_mode="HTML")
+                    else: raise e
             elif img_url:
-                bot.send_photo(chat_id, img_url, caption=text, reply_markup=markup)
+                bot.send_photo(chat_id, img_url, caption=display_text, reply_markup=markup, parse_mode="HTML")
             else:
-                bot.send_message(chat_id, text, reply_markup=markup)
+                bot.send_message(chat_id, display_text, reply_markup=markup, parse_mode="HTML")
 
     except Exception as e:
         logger.error(f"Error sending level: {e}")
         bot.send_message(chat_id, f"⚠️ Ошибка отправки уровня: {e}")
+
+@bot.message_handler(func=lambda msg: msg.text == "Смена режима ИИ")
+def toggle_ai_mode(message):
+    p = get_player(message.chat.id)
+    p["ai_mode"] = not p.get("ai_mode", True)
+    save_player(message.chat.id, p)    
+    send_level(message.chat.id)
 
 @bot.message_handler(commands=['theory'])
 @bot.message_handler(func=lambda msg: msg.text == "Теория")
@@ -203,27 +267,101 @@ def handle_callback(call):
             time.sleep(0.5)
             send_level(call.message.chat.id)
 
+
+@bot.message_handler(func=lambda msg: msg.text not in ["Теория", "Рестарт", "/start", "/theory"])
+def handle_user_text_answer(message):
+    chat_id = message.chat.id
+    user_text = message.text
+
+    p = get_player(chat_id)
+    idx = p.get("idx", 0)
+    if not p.get("ai_mode", True):
+        return 
+
+    if idx >= len(SCENARIOS):
+        bot.send_message(chat_id, "Игра завершена. Нажми «Рестарт» для новой игры.")
+        return
+
+    task = SCENARIOS[idx]
+    game_mode = task.get("game_mode", "native")
+
+    if game_mode == "webapp":
+        bot.send_message(chat_id, "В этом уровне необходимо взаимодействовать с интерфейсом. Нажми кнопку «Открыть мини-приложение».")
+        return
+
+    bot.send_chat_action(chat_id, 'typing')
+
+    ai_result = evaluate_with_ai(
+        scenario_text=task['text'],
+        threat=task.get('threat', 'Неизвестно'),
+        correct_actions=task.get('correct', []),
+        user_answer=user_text
+    )
+
+    is_correct = ai_result.get("is_correct", False)
+    ai_comment = ai_result.get("ai_comment", "Действие не распознано.")
+
+    if is_correct:
+        p["xp"] += 25
+        res_text = "✅ Верно!"
+    else:
+        p["hp"] -= 20
+        res_text = "❌ Ошибка!"
+        threat_name = task.get("threat", "Неизвестная угроза")
+        p.setdefault("mistakes", {})
+        p["mistakes"][threat_name] = p["mistakes"].get(threat_name, 0) + 1
+
+    feedback = f"{res_text}\n\n{ai_comment}\n\n{task.get('feedback', '')}\n\n❤️ HP: {p['hp']} | ⭐ XP: {p['xp']}"
+    
+    bot.send_message(chat_id, feedback, parse_mode="HTML")
+
+    p["idx"] += 1
+    save_player(chat_id, p)
+    
+    if p["hp"] <= 0:
+        game_over_msg = "💀 <b>Game Over</b>\n\nНапиши /start чтобы начать заново."
+        if p["idx"] >= 4 and p.get("mistakes"):
+            worst_threat = max(p["mistakes"], key=p["mistakes"].get)
+            game_over_msg = f"💀 <b>Game Over</b>\n\nТы часто допускал ошибки в угрозе под названием <b>«{worst_threat}»</b>. Используй кнопку «Теория», чтобы изучить эту угрозу!\n\nНапиши /start чтобы начать заново."
+
+        bot.send_message(chat_id, game_over_msg, parse_mode="HTML")
+        p["hp"] = 100
+        p["idx"] = 0
+        p["mistakes"] = {}
+        save_player(chat_id, p)
+    else:
+        time.sleep(0.5)
+        send_level(chat_id)
+
 @bot.message_handler(commands=['start'])
 @bot.message_handler(func=lambda msg: msg.text == "Рестарт")
 def handle_start(message):
-    p = {"hp": 100, "xp": 0, "idx": 0, "mistakes": {}}
+    old_p = get_player(message.chat.id)
+    ai_mode = old_p.get("ai_mode", True)
+    
+    p = {"hp": 100, "xp": 0, "idx": 0, "mistakes": {}, "ai_mode": ai_mode}
     save_player(message.chat.id, p)
 
     menu_markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False)
-    menu_markup.row(types.KeyboardButton("Теория"), types.KeyboardButton("Рестарт"))
+    btn_theory = types.KeyboardButton("Теория")
+    btn_restart = types.KeyboardButton("Рестарт")
+    mode_text = "Смена режима ИИ"
+    btn_mode = types.KeyboardButton(mode_text)
+    
+    menu_markup.row(btn_theory, btn_mode)
+    menu_markup.row(btn_restart)
 
+    github_url = "https://github.com/chenazesm/TGbotcpravo" 
     welcome_text = (
         "<b>Добро пожаловать в CSGame!</b>\n\n"
-        "Здесь ты научишься распознавать угрозы и защищать свои данные.\n\n"
-        "<b>Как играть?</b>\n"
-        "Тебе будут предложены различные ситуации. Твоя задача заключается в выборе действий.\n\n"
-        "❤️ <b>HP</b> — твое здоровье (теряется при ошибках).\n"
-        "⭐ <b>XP</b> — опыт (дается за правильные ответы).\n\n"
-        "💡 <i>Совет: Если не уверен — загляни в /theory.</i>\n\n"
+        "❤️ <b>HP</b> — твое здоровье.\n"
+        "⭐ <b>XP</b> — опыт.\n\n"
+        "🚀 <b>Внимание!</b> Бот был обновлен до новой версии, в которую встроен ИИ для анализа ответов. "
+        f"Подробнее о разработке на <a href='{github_url}'>GitHub</a>.\n\n"
+        "Если вы хотите вернуться к классическим кнопкам выбора для этого игрового сеанса, нажмите кнопку <b>«Смена режима ИИ»</b> в меню."
     )
 
-    bot.send_message(message.chat.id, welcome_text, parse_mode="HTML", reply_markup=menu_markup)
-    
+    bot.send_message(message.chat.id, welcome_text, parse_mode="HTML", reply_markup=menu_markup, disable_web_page_preview=True)
     time.sleep(1) 
     send_level(message.chat.id)
 
