@@ -42,56 +42,52 @@ except Exception as e:
 
 def evaluate_with_ai(scenario_text, threat, correct_actions, user_answer):
     clean_key = str(AI_KEY).strip() if AI_KEY else None
-    
     if not clean_key or clean_key == "None":
-        return {"is_correct": False, "ai_comment": "Ошибка: API ключ не считан из .env."}
+        return {"is_correct": False, "ai_comment": "Ошибка: Ключ API не найден в .env"}
 
     prompt = f"""
-    Ситуация: {scenario_text}
-    Тип угрозы: {threat}
-    Пользователь ответил: {user_answer}
-    Верни ответ СТРОГО в формате JSON:
-    {{"is_correct": true/false, "ai_comment": "короткое пояснение на русском"}}
-    """
+Ты эксперт по кибербезопасности. Игрок находится в обучающей ситуации:
+Ситуация: "{scenario_text}"
+Угроза: "{threat}"
+Ответ игрока (его действие): "{user_answer}"
 
-    url = "https://api.groq.com/openai/v1/chat/completions"
+Задача: оцени, безопасно ли поступил игрок (учитывай синонимы отказа, игнорирования, пролистывания, здравый смысл).
+Если игрок проявил бдительность, отказался, проигнорировал, заблокировал, нажал скрыть / не интересует — это верно (true).
+Если согласился, скачал, ввел данные, поверил мошеннику или написал бред не по теме — это ошибка (false).
+
+Ответь СТРОГО в формате JSON без лишнего текста:
+{{"is_correct": true, "ai_comment": "Краткое понятное объяснение решения на русском (1 предложение)"}}
+"""
+
+    url = "https://openrouter.ai/api/v1/chat/completions"
     headers = {
         "Authorization": f"Bearer {clean_key}",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://cybertutor.ru",
+        "X-Title": "CyberPravo"
     }
-    
     data = {
-        "model": "llama-3.1-8b-instant", 
-        "messages": [
-            {
-                "role": "user", 
-                "content": prompt
-            }
-        ],
-        "temperature": 0.2
+        "model": "openrouter/free", 
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.1
     }
 
     try:
-        response = requests.post(url, headers=headers, json=data, timeout=10)
-        
+        response = requests.post(url, headers=headers, json=data, timeout=15)
         if response.status_code != 200:
-            logger.error(f"GROQ ERROR: {response.status_code} - {response.text}")
-            return {
-                "is_correct": False, 
-                "ai_comment": f"Ошибка {response.status_code}. Проверьте правильность ключа в .env"
-            }
+            logger.error(f"OpenRouter Error: {response.status_code} - {response.text}")
+            return {"is_correct": False, "ai_comment": f"Ошибка API ({response.status_code})."}
             
         res_json = response.json()
         content = res_json['choices'][0]['message']['content']
-        
+        content = re.sub(r'```json\n?|```', '', content).strip()
         match = re.search(r'\{.*\}', content, re.DOTALL)
         if match:
             return json.loads(match.group())
         return json.loads(content)
-
     except Exception as e:
-        logger.error(f"AI ERROR: {str(e)}")
-        return {"is_correct": False, "ai_comment": "Техническая ошибка связи."}
+        logger.error(f"OpenRouter Exception: {e}")
+        return {"is_correct": False, "ai_comment": f"Сбой связи с сервером ИИ: {str(e)}"}
 
 def get_player(chat_id):
     key = f"player:{chat_id}"
